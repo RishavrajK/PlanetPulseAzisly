@@ -11,11 +11,21 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const isProd = process.env.NODE_ENV === 'production';
 
 // ── Middleware ────────────────────────────────────────────────────────────────
-app.use(cors());
+// CORS: in production only allow the deployed frontend origin
+const corsOptions = isProd
+  ? {
+      origin: process.env.CLIENT_URL || '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
+    }
+  : {}; // dev: allow all
+app.use(cors(corsOptions));
 app.use(express.json());
-app.use(morgan('dev'));
+app.use(morgan(isProd ? 'combined' : 'dev'));
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 app.use('/api/activities', activityRoutes);
