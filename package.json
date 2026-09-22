@@ -2,6 +2,7 @@
   "name": "planetpulse",
   "version": "1.0.0",
   "description": "A carbon footprint tracker — Hackathon AZIS-WC3G5F",
+  "main": "server/server.js",
   "scripts": {
     "start": "node server/server.js",
     "build": "cd server && npm install",
