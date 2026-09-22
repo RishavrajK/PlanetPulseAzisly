@@ -18,10 +18,11 @@ export default function History() {
   const [applied, setApplied] = useState({});
 
   const { activities, loading, remove } = useAllActivities(applied);
+  const safeActivities = Array.isArray(activities) ? activities : [];
 
   const totalCO2 = useMemo(
-    () => activities.reduce((s, a) => s + a.co2, 0),
-    [activities]
+    () => safeActivities.reduce((s, a) => s + (a?.co2 || 0), 0),
+    [safeActivities]
   );
 
   const handleFilter = () => setApplied({ ...filters });
@@ -92,10 +93,10 @@ export default function History() {
       </div>
 
       {/* Summary */}
-      {!loading && activities.length > 0 && (
+      {!loading && safeActivities.length > 0 && (
         <div className="flex items-center gap-4 mb-4 animate-in" style={{ flexWrap: 'wrap' }}>
           <span className="text-muted text-sm">
-            <strong style={{ color: 'var(--color-text)' }}>{activities.length}</strong> activities found
+            <strong style={{ color: 'var(--color-text)' }}>{safeActivities.length}</strong> activities found
           </span>
           <span className="text-muted text-sm">
             Total: <strong style={{ color: 'var(--color-primary)' }}>{totalCO2.toFixed(3)} kg CO₂</strong>
@@ -106,7 +107,7 @@ export default function History() {
       {/* List */}
       <div className="card animate-in" id="history-activity-list">
         <ActivityList
-          activities={activities}
+          activities={safeActivities}
           loading={loading}
           onDelete={remove}
         />

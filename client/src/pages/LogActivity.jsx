@@ -16,8 +16,9 @@ export default function LogActivity() {
     refetch(); // FIX-5: id param removed (unused); full refetch keeps list in sync
   };
 
+  const safeActivities = Array.isArray(activities) ? activities : [];
   // Show only last 5 for quick-view
-  const recent = activities.slice(0, 5);
+  const recent = safeActivities.slice(0, 5);
 
   return (
     <div>
@@ -40,16 +41,16 @@ export default function LogActivity() {
         <div className="card animate-in">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--sp-4)' }}>
             <div className="card-title" style={{ marginBottom: 0 }}>This Week's Entries</div>
-            <span className="text-xs text-muted">{activities.length} total</span>
+            <span className="text-xs text-muted">{safeActivities.length} total</span>
           </div>
           <ActivityList
             activities={recent}
             loading={loading}
             onDelete={handleDelete}
           />
-          {activities.length > 5 && (
+          {safeActivities.length > 5 && (
             <p className="text-sm text-muted mt-4" style={{ textAlign: 'center' }}>
-              Showing 5 of {activities.length} — <a href="/history" style={{ color: 'var(--color-primary)' }}>View all</a>
+              Showing 5 of {safeActivities.length} — <a href="/history" style={{ color: 'var(--color-primary)' }}>View all</a>
             </p>
           )}
         </div>

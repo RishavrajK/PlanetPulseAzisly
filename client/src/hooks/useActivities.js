@@ -19,13 +19,14 @@ export function useWeekActivities() {
       setLoading(true);
       setError(null);
       const res = await getWeekActivities();
+      const list = Array.isArray(res.data?.data) ? res.data.data : [];
       setData({
-        activities: res.data.data,
-        totalCO2: res.data.totalCO2,
-        breakdown: res.data.breakdown,
-        weekStart: res.data.weekStart,
-        weekEnd: res.data.weekEnd,
-        count: res.data.count,
+        activities: list,
+        totalCO2: typeof res.data?.totalCO2 === 'number' ? res.data.totalCO2 : 0,
+        breakdown: res.data?.breakdown || {},
+        weekStart: res.data?.weekStart || null,
+        weekEnd: res.data?.weekEnd || null,
+        count: typeof res.data?.count === 'number' ? res.data.count : list.length,
       });
     } catch (err) {
       setError(err.response?.data?.error || err.message);
@@ -50,16 +51,17 @@ export function useAllActivities(filters = {}) {
       setLoading(true);
       setError(null);
       const res = await getActivities(filters);
+      const list = Array.isArray(res.data?.data) ? res.data.data : [];
       // Sort by createdAt descending — exact creation timestamp, newest first.
-      // Falls back to date if createdAt is missing (e.g. old records).
-      const sorted = [...res.data.data].sort((a, b) => {
-        const tA = a.createdAt ? new Date(a.createdAt) : new Date(a.date);
-        const tB = b.createdAt ? new Date(b.createdAt) : new Date(b.date);
+      const sorted = [...list].sort((a, b) => {
+        const tA = a?.createdAt ? new Date(a.createdAt) : new Date(a?.date || 0);
+        const tB = b?.createdAt ? new Date(b.createdAt) : new Date(b?.date || 0);
         return tB - tA;
       });
       setActivities(sorted);
     } catch (err) {
       setError(err.response?.data?.error || err.message);
+      setActivities([]);
     } finally {
       setLoading(false);
     }

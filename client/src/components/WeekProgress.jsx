@@ -4,9 +4,12 @@ import { formatWeekLabel } from '../utils/week';
  * WeekProgress — shows the current week date range (DP3: Sun→Sat)
  * and a colour-coded progress bar of CO₂ vs target.
  */
-export default function WeekProgress({ totalCO2, target, loading }) {
-  const pct = target > 0 ? Math.min((totalCO2 / target) * 100, 100) : 0;
-  const rawPct = target > 0 ? (totalCO2 / target) * 100 : 0;
+export default function WeekProgress({ totalCO2 = 0, target = 20, loading }) {
+  const safeTotal = typeof totalCO2 === 'number' && !isNaN(totalCO2) ? totalCO2 : 0;
+  const safeTarget = typeof target === 'number' && !isNaN(target) && target > 0 ? target : 20;
+
+  const pct = Math.min((safeTotal / safeTarget) * 100, 100);
+  const rawPct = (safeTotal / safeTarget) * 100;
 
   let barClass = 'safe';
   if (rawPct >= 100) barClass = 'danger';
@@ -32,7 +35,7 @@ export default function WeekProgress({ totalCO2, target, loading }) {
       <div className="progress-wrap">
         <div className="progress-info">
           <span className="progress-label">
-            {loading ? '—' : `${totalCO2?.toFixed(2)} / ${target} kg CO₂`}
+            {loading ? '—' : `${safeTotal.toFixed(2)} / ${safeTarget} kg CO₂`}
           </span>
           <span
             className="progress-pct"
@@ -55,8 +58,8 @@ export default function WeekProgress({ totalCO2, target, loading }) {
           <span className="text-xs text-muted">Sun – Sat week (DP3)</span>
           <span className="text-xs text-muted">
             {loading ? '' : rawPct <= 100
-              ? `${(target - totalCO2).toFixed(2)} kg remaining`
-              : `${(totalCO2 - target).toFixed(2)} kg over target`}
+              ? `${(safeTarget - safeTotal).toFixed(2)} kg remaining`
+              : `${(safeTotal - safeTarget).toFixed(2)} kg over target`}
           </span>
         </div>
       </div>
