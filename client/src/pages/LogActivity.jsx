@@ -12,8 +12,8 @@ export default function LogActivity() {
     setKey((k) => k + 1);
   };
 
-  const handleDelete = (id) => {
-    refetch();
+  const handleDelete = () => {
+    refetch(); // FIX-5: id param removed (unused); full refetch keeps list in sync
   };
 
   // Show only last 5 for quick-view

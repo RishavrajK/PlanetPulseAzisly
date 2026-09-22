@@ -39,8 +39,14 @@ export function formatDate(date) {
 }
 
 /**
- * Returns an ISO date string (YYYY-MM-DD) for an input[type="date"].
+ * Returns a YYYY-MM-DD string in LOCAL time for an input[type="date"].
+ * Uses local date parts (not toISOString which is UTC) to avoid
+ * showing yesterday's date for users in UTC+ timezones after midnight. (FIX-3)
  */
 export function toInputDate(date = new Date()) {
-  return new Date(date).toISOString().split('T')[0];
+  const d = new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 }

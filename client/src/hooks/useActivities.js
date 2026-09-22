@@ -50,7 +50,14 @@ export function useAllActivities(filters = {}) {
       setLoading(true);
       setError(null);
       const res = await getActivities(filters);
-      setActivities(res.data.data);
+      // Sort by createdAt descending — exact creation timestamp, newest first.
+      // Falls back to date if createdAt is missing (e.g. old records).
+      const sorted = [...res.data.data].sort((a, b) => {
+        const tA = a.createdAt ? new Date(a.createdAt) : new Date(a.date);
+        const tB = b.createdAt ? new Date(b.createdAt) : new Date(b.date);
+        return tB - tA;
+      });
+      setActivities(sorted);
     } catch (err) {
       setError(err.response?.data?.error || err.message);
     } finally {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+
 import { Link } from 'react-router-dom';
 import { useWeekActivities } from '../hooks/useActivities';
 import { useTarget } from '../hooks/useTarget';
@@ -10,13 +10,8 @@ import TargetEditor from '../components/TargetEditor';
 
 export default function Dashboard() {
   const { totalCO2, breakdown, count, loading: weekLoading, refetch } = useWeekActivities();
-  const { target, loading: targetLoading } = useTarget();
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const handleTargetSaved = useCallback(() => {
-    setRefreshKey((k) => k + 1);
-    refetch();
-  }, [refetch]);
+  // FIX-1: single useTarget() instance — saves propagate immediately to NudgeBanner + WeekProgress
+  const { target, loading: targetLoading, saving, saveTarget } = useTarget();
 
   const loading = weekLoading || targetLoading;
 
@@ -50,7 +45,14 @@ export default function Dashboard() {
           <WeekProgress totalCO2={totalCO2} target={target} loading={loading} />
         </div>
         <div>
-          <TargetEditor key={refreshKey} onTargetSaved={handleTargetSaved} />
+          {/* FIX-1: props flow down from Dashboard's useTarget() — no stale state */}
+          <TargetEditor
+            target={target}
+            loading={targetLoading}
+            saving={saving}
+            saveTarget={saveTarget}
+            onTargetSaved={refetch}
+          />
         </div>
 
         {/* Full-width breakdown chart */}

@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { useTarget } from '../hooks/useTarget';
 
 /**
  * TargetEditor — inline editable weekly CO₂ target.
  * Default is 20 kg. User can change at any time.
+ *
+ * Props are provided by Dashboard (single useTarget() instance) so that
+ * NudgeBanner and WeekProgress update instantly after a save. (FIX-1)
  */
-export default function TargetEditor({ onTargetSaved }) {
-  const { target, loading, saving, saveTarget } = useTarget();
+export default function TargetEditor({ target, loading, saving, saveTarget, onTargetSaved }) {
   const [value, setValue] = useState('');
   const [editing, setEditing] = useState(false);
   const [saved, setSaved] = useState(false);

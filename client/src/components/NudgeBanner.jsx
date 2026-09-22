@@ -5,8 +5,10 @@
 export default function NudgeBanner({ totalCO2, target }) {
   const overage = totalCO2 - target;
 
-  // Only show when actually over target
-  if (!totalCO2 || !target || totalCO2 <= target) return null;
+  // Only show when actually over target. Use explicit null checks (FIX-4):
+  // !totalCO2 would suppress the banner when totalCO2 = 0 (correct, but fragile),
+  // so we guard with == null instead and also reject target <= 0.
+  if (totalCO2 == null || target == null || target <= 0 || totalCO2 <= target) return null;
 
   return (
     <div className="alert alert-warning animate-in" id="nudge-banner" role="alert">

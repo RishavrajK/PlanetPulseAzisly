@@ -28,15 +28,21 @@ const getActivities = async (req, res, next) => {
 
     if (startDate || endDate) {
       filter.date = {};
-      if (startDate) filter.date.$gte = new Date(startDate);
+      if (startDate) {
+        // Parse as local-day start (00:00:00) to avoid UTC offset boundary errors
+        const start = new Date(startDate);
+        start.setHours(0, 0, 0, 0);
+        filter.date.$gte = start;
+      }
       if (endDate) {
+        // Parse as local-day end (23:59:59.999)
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
         filter.date.$lte = end;
       }
     }
 
-    const activities = await Activity.find(filter).sort({ date: -1 });
+    const activities = await Activity.find(filter).sort({ createdAt: -1, date: -1 });
     res.json({ success: true, count: activities.length, data: activities });
   } catch (err) {
     next(err);
