@@ -3,11 +3,20 @@
   "version": "1.0.0",
   "description": "A carbon footprint tracker — Hackathon AZIS-WC3G5F",
   "scripts": {
+    "start": "node server/server.js",
+    "build": "cd server && npm install",
+    "postinstall": "cd server && npm install",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
-    "start": "node server/server.js",
     "install:all": "npm install && npm install --prefix server && npm install --prefix client"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "mongoose": "^8.5.1",
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
