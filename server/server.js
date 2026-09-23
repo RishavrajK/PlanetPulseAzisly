@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const activityRoutes = require('./routes/activityRoutes');
 const targetRoutes = require('./routes/targetRoutes');
@@ -33,7 +34,14 @@ app.use('/api/target', targetRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, status: 'ok', timestamp: new Date().toISOString() });
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.json({
+    success: true,
+    status: isDbConnected ? 'healthy' : 'degraded',
+    database: isDbConnected ? 'connected' : 'disconnected',
+    readyState: mongoose.connection.readyState,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // 404 for unknown routes

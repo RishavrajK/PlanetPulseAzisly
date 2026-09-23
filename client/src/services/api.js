@@ -1,9 +1,21 @@
 import axios from 'axios';
 
-// In production (Vercel), VITE_API_URL is set to the Railway backend URL.
-// In development, falls back to '/api' which is proxied by Vite to localhost:5000.
+// Normalize VITE_API_URL to handle missing protocol, trailing slashes, or missing /api path
+let rawUrl = (import.meta.env.VITE_API_URL || '/api').trim();
+
+if (rawUrl && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://') && !rawUrl.startsWith('/')) {
+  rawUrl = `https://${rawUrl}`;
+}
+
+if (rawUrl.startsWith('http')) {
+  rawUrl = rawUrl.replace(/\/+$/, '');
+  if (!rawUrl.endsWith('/api')) {
+    rawUrl = `${rawUrl}/api`;
+  }
+}
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: rawUrl,
   headers: { 'Content-Type': 'application/json' },
 });
 
